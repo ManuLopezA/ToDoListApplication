@@ -6,28 +6,32 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.toDoList.Models.ToDo;
-import com.example.toDoList.Repositories.ToDoRepository;
+import com.example.toDoList.Models.*;
+import com.example.toDoList.Repositories.*;
 
 @Service("ToDoService")
-public class ToDoService implements IToDoService{
+public class ToDoService implements IToDoService {
 
 	@Autowired
-	ToDoRepository todoRepository;
-	
-	public List<ToDo> findAll(){
-		return todoRepository.findAll();		
+	private ToDoRepository todoRepository;
+	@Autowired
+	private UserRepository userRepository;
+
+	public List<ToDo> findAll() {
+		return todoRepository.findAll();
 	}
-	
-	
+
+	public void addNewToDo(ToDo newToDo) {
+		todoRepository.save(newToDo);
+	}
 
 	@Override
-	public List<ToDo> findByTitle(String title) {		
+	public List<ToDo> findByTitle(String title) {
 		List<ToDo> todoListAll = findAll();
-		List<ToDo> todoListFiltered = new ArrayList();
-		
+		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
+
 		for (ToDo toDo : todoListAll) {
-			if(toDo.getTitle().contains(title))
+			if (toDo.getTitle().toLowerCase().contains(title.toLowerCase()))
 				todoListFiltered.add(toDo);
 		}
 		return todoListFiltered;
@@ -36,12 +40,44 @@ public class ToDoService implements IToDoService{
 	@Override
 	public List<ToDo> findByUserName(String userName) {
 		List<ToDo> todoListAll = findAll();
-		List<ToDo> todoListFiltered = new ArrayList();	
-		
+		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
+
 		for (ToDo toDo : todoListFiltered) {
-			if(toDo.getUser().getName().equals(userName))
+			if (toDo.getUser().getName().equals(userName))
 				todoListFiltered.add(toDo);
-		}		
+		}
 		return todoListFiltered;
 	}
+
+	@Override
+	public List<ToDo> findByUserName(List<ToDo> toDoList, String userName) {
+		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
+
+		for (ToDo toDo : toDoList) {
+			if (toDo.getUser().getUserName().equals(userName))
+				todoListFiltered.add(toDo);
+		}
+		return todoListFiltered;
+	}
+
+	@Override
+	public List<ToDo> findByTitleAndUser(String userName, String title) {
+		List<ToDo> todoList = findByTitle(title);
+		if (userName.isEmpty())
+			return todoList;
+		return findByUserName(todoList, userName);
+	}
+
+	public void updateToDo(ToDo toDo, User user, String title, boolean completed) {
+		toDo.setUser(user);
+		toDo.setTitle(title);
+		toDo.setCompleted(completed);
+		todoRepository.save(toDo);
+	}
+
+	@Override
+	public ToDo getToDo(int id) {
+		return todoRepository.findById(id).orElse(null);
+	}
+
 }

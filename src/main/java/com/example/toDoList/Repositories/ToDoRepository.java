@@ -8,5 +8,4 @@ import com.example.toDoList.Models.ToDo;
 @Repository
 public interface ToDoRepository extends JpaRepository<ToDo, Integer>
 {
-	
 }

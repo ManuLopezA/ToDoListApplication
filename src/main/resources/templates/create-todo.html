@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Create or Edit To-Do</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container mt-5">
+		<h1 th:text="${toDo != null} ? 'Edit To-Do' : 'Create To-Do'"></h1>
+		<form th:action="@{${toDo != null} ? '/update-todo' : '/save-todo'}" method="post">
+			<input type="hidden" name="id" th:value="${toDo != null} ? ${toDo.id} : ''"/>	
+			<div>
+				<label for="user">User</label>
+				<select name="userId" id="user" class="form-control">
+					<option th:each="user : ${users}" 
+					        th:value="${user.id}" 
+					        th:text="${user.name}" 
+					        th:selected="${toDo != null && user.id == toDo.user.id}"></option>
+				</select>
+			</div>
+			<div>
+				<label for="title">Title</label>
+				<input type="text" id="title" name="title" class="form-control" th:value="${toDo != null} ? ${toDo.title} : ''"/>
+			</div>
+
+			<div>
+				<label for="completed">Completed</label>
+				<select name="completed" id="completed" class="form-control">
+					<option value="false" th:selected="${toDo != null && !toDo.completed}">Not Completed</option>
+					<option value="true" th:selected="${toDo != null && toDo.completed}">Completed</option>
+				</select>
+			</div>
+
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+
+		<div th:if="${error}" class="alert alert-danger" role="alert">
+			<p th:text="${error}"></p>
+		</div>
+	</div>
+</body>
+
+</html>
