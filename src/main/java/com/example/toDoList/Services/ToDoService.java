@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.toDoList.Models.*;
@@ -77,6 +78,28 @@ public class ToDoService implements IToDoService {
     public Page<ToDo> findPaginatedFiltered(Pageable pageable, String userName, String title ) {
 //    	System.out.println("02 findPaginatedFiltered");
     	List<ToDo> todosFiltered = findByUserAndTitle(userName, title);
+    	if (pageable.getSort().isSorted()) {
+            Sort sort = pageable.getSort();
+            todosFiltered.sort((todo1, todo2) -> {
+                for (Sort.Order order : sort) {
+                    int comparison = 0;
+                    if ("title".equals(order.getProperty())) {
+                        comparison = todo1.getTitle().compareToIgnoreCase(todo2.getTitle());
+                    } else if ("username".equals(order.getProperty())) {
+                        comparison = todo1.getUser().getUserName().compareToIgnoreCase(todo2.getUser().getUserName());
+                    } else if ("completed".equals(order.getProperty())) {
+                        comparison = Boolean.compare(todo1.isCompleted(), todo2.isCompleted());
+                    }
+                    if (order.isDescending()) {
+                        comparison *= -1;
+                    }
+                    if (comparison != 0) {
+                        return comparison;
+                    }
+                }
+                return 0; 
+            });
+        }
     	
         int start = Math.toIntExact(pageable.getOffset());
         int end = Math.min(start + pageable.getPageSize(), todosFiltered.size());
@@ -88,4 +111,3 @@ public class ToDoService implements IToDoService {
     }
 }
 
-//MAIN
