@@ -25,7 +25,6 @@ public class ToDoListController {
 
 //	@GetMapping("/")
 //	private String index(Model model) {
-//		System.out.println("index route -> @GetMapping(\"/index\")");
 //		model.addAttribute("toDos", toDoServ.findAll());
 //		return "todo-pagination";
 //	}
@@ -46,12 +45,15 @@ public class ToDoListController {
 		int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
         Page<ToDo> toDoPage;
+        
         if((filterTitle== null|| filterTitle.isEmpty()) && (filterUsername==null || filterUsername.isEmpty())) {
         	toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize));
         } else {        	
         	toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize), filterUsername, filterTitle );
         }
 		model.addAttribute("toDoPage", toDoPage);
+	    model.addAttribute("filterTitle", filterTitle);
+	    model.addAttribute("filterUsername", filterUsername);
 		int totalPages = toDoPage.getTotalPages();
 		
         if (totalPages > 0) {

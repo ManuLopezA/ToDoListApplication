@@ -76,7 +76,6 @@ public class ToDoService implements IToDoService {
     
     public Page<ToDo> findPaginatedFiltered(Pageable pageable, String userName, String title ) {
 //    	System.out.println("02 findPaginatedFiltered");
-    	List<ToDo> todos = todoRepository.findAll();
     	List<ToDo> todosFiltered = findByUserAndTitle(userName, title);
     	
         int start = Math.toIntExact(pageable.getOffset());

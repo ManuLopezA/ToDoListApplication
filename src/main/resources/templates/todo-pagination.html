@@ -60,11 +60,11 @@
 
 		<div th:if="${toDoPage.totalPages > 0}" class="pagination">
 			<span th:each="pageNumber : ${pageNumbers}">
-				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber})}" th:text="${pageNumber}"
-					th:class="${pageNumber == toDoPage.number + 1} ? 'active' : ''"></a>
+				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber}, 
+							filterTitle=${filterTitle},filterUsername=${filterUsername})}"
+					th:text="${pageNumber}" th:class="${pageNumber == toDoPage.number + 1} ? 'active' : ''"></a>
 			</span>
 		</div>
-
 	</div>
 </body>
 
