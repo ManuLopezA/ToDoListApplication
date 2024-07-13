@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.toDoList.Models.*;
@@ -16,7 +18,7 @@ public class ToDoService implements IToDoService {
 	private ToDoRepository todoRepository;
 	@Autowired
 	private UserRepository userRepository;
-
+	
 	public List<ToDo> findAll() {
 		return todoRepository.findAll();
 	}
@@ -79,5 +81,19 @@ public class ToDoService implements IToDoService {
 	public ToDo getToDo(int id) {
 		return todoRepository.findById(id).orElse(null);
 	}
+	
+    public Page<ToDo> getToDos(Pageable pageable) {
+        return todoRepository.findAll(pageable);
+    }
+    
+    
+    public Page<ToDo> findPaginated(Pageable pageable) {
+        return todoRepository.findAll(pageable);
+    }
+    
+    public Page<ToDo> findPaginatedFiltered(Pageable pageable) {
+    	System.out.println(todoRepository.findAll(pageable));
+        return todoRepository.findAll(pageable);
+    }
 
 }
