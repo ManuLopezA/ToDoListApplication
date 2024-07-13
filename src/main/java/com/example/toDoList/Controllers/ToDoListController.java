@@ -8,6 +8,10 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +27,7 @@ public class ToDoListController {
 	@Autowired
 	private ToDoService toDoServ;
 
-//	@GetMapping("/")
-//	private String index(Model model) {
-//		model.addAttribute("toDos", toDoServ.findAll());
-//		return "todo-pagination";
-//	}
-	
+
 	@GetMapping("/")
 	private String redirectToIndex() {
 	    return "redirect:/index?page=1&size=10"; 
@@ -39,21 +38,31 @@ public class ToDoListController {
 			@RequestParam("page") Optional<Integer> page, 
 		    @RequestParam("size") Optional<Integer> size, 
 		    @RequestParam(value = "filterTitle", required = false) String filterTitle,
-			@RequestParam(value = "filterUsername", required = false) String filterUsername, 
+			@RequestParam(value = "filterUsername", required = false) String filterUsername,
+			@RequestParam(defaultValue = "id,asc") String[] sort,
 			Model model)
 	{
 		int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
         Page<ToDo> toDoPage;
         
+        String sortField = sort[0];
+        String sortDirection = sort[1];
+        
+        Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Order order = new Order(direction, sortField);
+        
         if((filterTitle== null|| filterTitle.isEmpty()) && (filterUsername==null || filterUsername.isEmpty())) {
-        	toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+        	toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize, Sort.by(order)));
         } else {        	
-        	toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize), filterUsername, filterTitle );
+        	toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize,  Sort.by(order)), filterUsername, filterTitle );
         }
 		model.addAttribute("toDoPage", toDoPage);
 	    model.addAttribute("filterTitle", filterTitle);
 	    model.addAttribute("filterUsername", filterUsername);
+	    model.addAttribute("sortField", sortField);
+	    model.addAttribute("sortDirection", sortDirection);
+	    model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
 		int totalPages = toDoPage.getTotalPages();
 		
         if (totalPages > 0) {
@@ -140,5 +149,4 @@ public class ToDoListController {
 	    return "redirect:/"; 
 	}
 }
-
 //branch
