@@ -68,7 +68,7 @@
 			</table>
 		</div>
 		<div th:if="${toDoPage == null || toDoPage.totalElements == 0}">
-			<p>No hay tareas pendientes</p>
+			<p>No results found</p>
 		</div>
 
 		<div th:if="${toDoPage.totalPages > 0}" class="pagination">
