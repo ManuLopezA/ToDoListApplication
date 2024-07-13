@@ -42,14 +42,14 @@ public class ToDoService implements IToDoService {
 		List<ToDo> todoListAll = findAll();
 		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
 
-		for (ToDo toDo : todoListFiltered) {
+		for (ToDo toDo : todoListAll) {
 			if (toDo.getUser().getName().equals(userName))
 				todoListFiltered.add(toDo);
 		}
 		return todoListFiltered;
 	}
 
-	@Override
+	@Override	
 	public List<ToDo> findByUserName(List<ToDo> toDoList, String userName) {
 		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
 
