@@ -39,14 +39,18 @@ public class ToDoListController {
 	private String toDoPagination(
 			@RequestParam("page") Optional<Integer> page, 
 		    @RequestParam("size") Optional<Integer> size, 
+		    @RequestParam(value = "filterTitle", required = false) String filterTitle,
+			@RequestParam(value = "filterUsername", required = false) String filterUsername, 
 			Model model)
 	{
-		System.out.println("toDoPagination route -> @GetMapping(\"/index\")");
-		
 		int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
-        
-        Page<ToDo> toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize));        
+        Page<ToDo> toDoPage;
+        if((filterTitle== null|| filterTitle.isEmpty()) && (filterUsername==null || filterUsername.isEmpty())) {
+        	toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+        } else {        	
+        	toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize), filterUsername, filterTitle );
+        }
 		model.addAttribute("toDoPage", toDoPage);
 		int totalPages = toDoPage.getTotalPages();
 		
@@ -64,16 +68,12 @@ public class ToDoListController {
 
 	@GetMapping(path = "/filter-todos")
 	private String filterTodos(
-			@RequestParam("page") Optional<Integer> page, 
-		    @RequestParam("size") Optional<Integer> size, 
 			@RequestParam(value = "filterTitle", required = false) String filterTitle,
 			@RequestParam(value = "filterUsername", required = false) String filterUsername, 
 			Model model)
 	{
-		int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
-        
-		List<ToDo> toDoList = toDoServ.findByTitleAndUser(filterUsername, filterTitle);
+        System.err.println("/filter-todos");
+		List<ToDo> toDoList = toDoServ.findByUserAndTitle(filterUsername, filterTitle);
 		model.addAttribute("toDos", toDoList);
 		return "index";
 	}

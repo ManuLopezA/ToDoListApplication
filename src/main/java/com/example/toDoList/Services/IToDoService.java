@@ -5,9 +5,8 @@ import java.util.List;
 import com.example.toDoList.Models.ToDo;
 
 public interface IToDoService {	
-	List<ToDo>findByTitle(String title);
-	List<ToDo>findByUserName(String userName);
-	List<ToDo>findByUserName(List<ToDo> toDoList, String userName);
-	List<ToDo>findByTitleAndUser(String userName, String title);
 	ToDo getToDo(int id);
+	List<ToDo> findByUserName(List<ToDo> list, String userName);	
+	List<ToDo> findByTitle(List<ToDo> list, String title);
+	List<ToDo> findByUserAndTitle(String userName, String title);
 }

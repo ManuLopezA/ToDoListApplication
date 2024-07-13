@@ -12,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class ToDo 
 {
+
+
 	@Id@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(nullable=false, length = 199)
@@ -55,6 +57,9 @@ public class ToDo
 		return id;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "ToDo [id=" + id + ", title=" + title + ", completed=" + completed + ", user=" + user + "]";
+	}
 
 }
