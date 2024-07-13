@@ -4,10 +4,24 @@
 <head>
 	<meta charset="UTF-8">
 	<title>To Do List</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 <body>
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">ToDo-App</a>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="/index">ToDo List</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/create-todo">Create ToDo</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 	<div class="container mt-5">
 		<h1>To Do List</h1>
 
@@ -15,11 +29,13 @@
 			<div class="form-row">
 				<div class="col">
 					<label for="filterTitle">Filter by Title</label>
-					<input type="text" id="filterTitle" name="filterTitle" class="form-control" placeholder="Enter title">
+					<input type="text" id="filterTitle" name="filterTitle" class="form-control"
+						placeholder="Enter title">
 				</div>
 				<div class="col">
 					<label for="filterUsername">Filter by Username</label>
-					<input type="text" id="filterUsername" name="filterUsername" class="form-control" placeholder="Enter username">
+					<input type="text" id="filterUsername" name="filterUsername" class="form-control"
+						placeholder="Enter username">
 				</div>
 				<div class="col">
 					<button type="submit" class="btn btn-primary mt-4">Filter</button>
@@ -43,7 +59,7 @@
 						</th>
 						<th>
 							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, 
-								filterUsername=${filterUsername}, sort=${'country,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+								filterUsername=${filterUsername}, sort=${'user.country,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Country'"></a>
 						</th>
 						<th>
@@ -73,7 +89,8 @@
 
 		<div th:if="${toDoPage.totalPages > 0}" class="pagination">
 			<span th:each="pageNumber : ${pageNumbers}">
-				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber}, filterTitle=${filterTitle}, filterUsername=${filterUsername})}" th:text="${pageNumber}" th:class="${pageNumber == toDoPage.number + 1} ? 'active' : ''"></a>
+				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber}, filterTitle=${filterTitle}, filterUsername=${filterUsername})}"
+					th:text="${pageNumber}" th:class="${pageNumber == toDoPage.number + 1} ? 'active' : ''"></a>
 			</span>
 		</div>
 	</div>

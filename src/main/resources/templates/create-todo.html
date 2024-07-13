@@ -8,22 +8,37 @@
 </head>
 
 <body>
+
+    	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">ToDo-App</a>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="/index">ToDo List</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/create-todo">Create ToDo</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+
 	<div class="container mt-5">
 		<h1 th:text="${toDo != null} ? 'Edit To-Do' : 'Create To-Do'"></h1>
 		<form th:action="@{${toDo != null} ? '/update-todo' : '/save-todo'}" method="post">
-			<input type="hidden" name="id" th:value="${toDo != null} ? ${toDo.id} : ''"/>	
+			<input type="hidden" name="id" th:value="${toDo != null} ? ${toDo.id} : ''" />
 			<div>
 				<label for="user">User</label>
 				<select name="userId" id="user" class="form-control">
-					<option th:each="user : ${users}" 
-					        th:value="${user.id}" 
-					        th:text="${user.name}" 
-					        th:selected="${toDo != null && user.id == toDo.user.id}"></option>
+					<option th:each="user : ${users}" th:value="${user.id}" th:text="${user.name}"
+						th:selected="${toDo != null && user.id == toDo.user.id}"></option>
 				</select>
 			</div>
 			<div>
 				<label for="title">Title</label>
-				<input type="text" id="title" name="title" class="form-control" th:value="${toDo != null} ? ${toDo.title} : ''"/>
+				<input type="text" id="title" name="title" class="form-control"
+					th:value="${toDo != null} ? ${toDo.title} : ''" />
 			</div>
 
 			<div>
