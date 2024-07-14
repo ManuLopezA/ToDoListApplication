@@ -89,6 +89,8 @@ public class ToDoService implements IToDoService {
                         comparison = todo1.getUser().getUserName().compareToIgnoreCase(todo2.getUser().getUserName());
                     } else if ("completed".equals(order.getProperty())) {
                         comparison = Boolean.compare(todo1.isCompleted(), todo2.isCompleted());
+                    } else if ("country".equals(order.getProperty())) { 
+                        comparison = todo1.getUser().getCountry().compareToIgnoreCase(todo2.getUser().getCountry());
                     }
                     if (order.isDescending()) {
                         comparison *= -1;

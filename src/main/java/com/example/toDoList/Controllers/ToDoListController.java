@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -18,8 +17,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.toDoList.Models.*;
-import com.example.toDoList.Services.*;
+import com.example.toDoList.Models.ToDo;
+import com.example.toDoList.Models.User;
+import com.example.toDoList.Services.CustomUserDetailsService;
+import com.example.toDoList.Services.ToDoService;
+import com.example.toDoList.Services.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ToDoListController {
@@ -28,39 +32,12 @@ public class ToDoListController {
 	private UserService userServ;
 	@Autowired
 	private ToDoService toDoServ;
+	@Autowired
+	private CustomUserDetailsService sessionServ;
 
 	@GetMapping("/")
 	private String redirectToIndex() {
 		return "redirect:/index?page=1&size=10";
-	}
-
-	@GetMapping("/login")
-	private String login() {
-		return "/";
-	}
-
-	// SI DA TIEMPO, SI NO, FUERA
-	@GetMapping("/login-error")
-	private String loginError(Model model) {
-		model.addAttribute("loginError", true);
-		return "login";
-	}
-
-	@PostMapping("/login-in")
-	private String loginIn(@RequestParam String username, @RequestParam String password, Model model) {
-
-		if (!userServ.findByUserName(username)) {
-			model.addAttribute("loginError", true);
-			return "login";
-		}
-
-		User user = userServ.getUser(username);
-		if (!userServ.correctPassword(password, user)){
-			model.addAttribute("loginError", true);
-			return "login";
-		}
-
-		return "redirect:/";
 	}
 
 	@GetMapping("/index")
@@ -68,7 +45,8 @@ public class ToDoListController {
 			@RequestParam("size") Optional<Integer> size,
 			@RequestParam(value = "filterTitle", required = false) String filterTitle,
 			@RequestParam(value = "filterUsername", required = false) String filterUsername,
-			@RequestParam(defaultValue = "id,asc") String[] sort, Model model) {
+			@RequestParam(defaultValue = "id,asc") String[] sort, Model model,
+			@RequestParam(value = "cantEdit", required = false) boolean cantEdit) {
 		int currentPage = page.orElse(1);
 		int pageSize = size.orElse(10);
 		Page<ToDo> toDoPage;
@@ -85,6 +63,10 @@ public class ToDoListController {
 			toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize, Sort.by(order)),
 					filterUsername, filterTitle);
 		}
+
+		   if (cantEdit) {
+		        model.addAttribute("cantEdit", true);
+		    }
 		model.addAttribute("toDoPage", toDoPage);
 		model.addAttribute("filterTitle", filterTitle);
 		model.addAttribute("filterUsername", filterUsername);
@@ -147,11 +129,16 @@ public class ToDoListController {
 	}
 
 	@GetMapping("/edit-todo")
-	private String editToDo(@RequestParam int id, Model model) {
+	private String editToDo(@RequestParam int id, HttpServletRequest request, Model model) {		
 		ToDo toDo = toDoServ.getToDo(id);
-		model.addAttribute("toDo", toDo);
-		model.addAttribute("users", userServ.findAllUsers());
-		return "create-todo";
+		
+	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
+	    {			
+			model.addAttribute("toDo", toDo);
+			model.addAttribute("users", userServ.findAllUsers());
+			return "create-todo";
+	    }	    	   
+	    return "redirect:/index?page=1&size=10&cantEdit=true";
 	}
 
 	@PostMapping("/update-todo")

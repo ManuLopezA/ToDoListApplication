@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
 	<meta charset="UTF-8">
 	<title>To Do List</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 <body>
-
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="#">ToDo-App</a>
 		<div class="collapse navbar-collapse">
-			<ul class="navbar-nav">
+			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
 					<a class="nav-link" href="/index">ToDo List</a>
 				</li>
@@ -20,11 +19,18 @@
 					<a class="nav-link" href="/create-todo">Create ToDo</a>
 				</li>
 			</ul>
+			<ul class="navbar-nav ml-auto">
+				<li sec:authorize="isAuthenticated()" class="nav-item">
+					<a class="nav-link" href="/logout">Logout</a>
+				</li>
+				<li sec:authorize="!isAuthenticated()" class="nav-item">
+					<a class="nav-link" href="/login">Login</a>
+				</li>
+			</ul>
 		</div>
 	</nav>
 	<div class="container mt-5">
 		<h1>To Do List</h1>
-
 		<form action="/index" method="get" class="mb-4">
 			<div class="form-row">
 				<div class="col">
@@ -43,28 +49,29 @@
 			</div>
 		</form>
 
+		<div th:if="${cantEdit}" class="alert alert-danger">
+			<p>Sorry, you cannot edit a todo that you do not own.</p>
+		</div>
+
+
 		<div th:if="${toDoPage != null}">
 			<table class="table table-striped">
 				<thead>
 					<tr>
 						<th>
-							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, 
-								filterUsername=${filterUsername}, sort=${'title,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'title,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Title'"></a>
 						</th>
 						<th>
-							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, 
-								filterUsername=${filterUsername}, sort=${'userName,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'userName,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Username'"></a>
 						</th>
 						<th>
-							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, 
-								filterUsername=${filterUsername}, sort=${'user. country,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'user.country,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Country'"></a>
 						</th>
 						<th>
-							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, 
-								filterUsername=${filterUsername}, sort=${'completed,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'completed,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Completed'"></a>
 						</th>
 						<th>Actions</th>
@@ -86,7 +93,6 @@
 		<div th:if="${toDoPage == null || toDoPage.totalElements == 0}">
 			<p>No results found</p>
 		</div>
-
 		<div th:if="${toDoPage.totalPages > 0}" class="pagination">
 			<span th:each="pageNumber : ${pageNumbers}">
 				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber}, filterTitle=${filterTitle}, filterUsername=${filterUsername})}"
