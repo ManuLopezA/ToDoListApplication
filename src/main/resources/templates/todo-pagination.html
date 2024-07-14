@@ -85,6 +85,7 @@
 						<td th:text="${toDo.completed}"></td>
 						<td>
 							<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">Edit</a>
+							<a th:href="@{/delete-todo(id=${toDo.id})}" class="btn btn-danger">Delete</a>
 						</td>
 					</tr>
 				</tbody>
