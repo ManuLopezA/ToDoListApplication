@@ -83,6 +83,11 @@ public class User {
 	public int getId() {
 		return id;
 	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", userName=" + userName + ", password=" + password + ", city="
+				+ city + "]";
+	}
 	
 	
 	

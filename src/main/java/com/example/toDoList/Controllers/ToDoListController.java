@@ -14,7 +14,9 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.toDoList.Models.*;
 import com.example.toDoList.Services.*;
@@ -34,18 +36,31 @@ public class ToDoListController {
 
 	@GetMapping("/login")
 	private String login() {
-		return "login";
+		return "/";
 	}
 
-	// Login form with error
-	@RequestMapping("/login-error")
+	// SI DA TIEMPO, SI NO, FUERA
+	@GetMapping("/login-error")
 	private String loginError(Model model) {
 		model.addAttribute("loginError", true);
 		return "login";
 	}
-	
-	private String loginIn() {
-		return "prueba";
+
+	@PostMapping("/login-in")
+	private String loginIn(@RequestParam String username, @RequestParam String password, Model model) {
+
+		if (!userServ.findByUserName(username)) {
+			model.addAttribute("loginError", true);
+			return "login";
+		}
+
+		User user = userServ.getUser(username);
+		if (!userServ.correctPassword(password, user)){
+			model.addAttribute("loginError", true);
+			return "login";
+		}
+
+		return "redirect:/";
 	}
 
 	@GetMapping("/index")
