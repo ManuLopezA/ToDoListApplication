@@ -46,7 +46,8 @@ public class ToDoListController {
 			@RequestParam(value = "filterTitle", required = false) String filterTitle,
 			@RequestParam(value = "filterUsername", required = false) String filterUsername,
 			@RequestParam(defaultValue = "id,asc") String[] sort, Model model,
-			@RequestParam(value = "cantEdit", required = false) boolean cantEdit) {
+			@RequestParam(required = false) boolean cantEdit,
+			@RequestParam(required = false) boolean deletedToDoId) {
 		int currentPage = page.orElse(1);
 		int pageSize = size.orElse(10);
 		Page<ToDo> toDoPage;
@@ -64,9 +65,11 @@ public class ToDoListController {
 					filterUsername, filterTitle);
 		}
 
-		   if (cantEdit) {
+		   if (cantEdit) 
 		        model.addAttribute("cantEdit", true);
-		    }
+		   if (deletedToDoId)
+			   model.addAttribute("deletedToDoId", deletedToDoId);			   
+		    
 		model.addAttribute("toDoPage", toDoPage);
 		model.addAttribute("filterTitle", filterTitle);
 		model.addAttribute("filterUsername", filterUsername);
@@ -130,8 +133,7 @@ public class ToDoListController {
 
 	@GetMapping("/edit-todo")
 	private String editToDo(@RequestParam int id, HttpServletRequest request, Model model) {		
-		ToDo toDo = toDoServ.getToDo(id);
-		
+		ToDo toDo = toDoServ.getToDo(id);		
 	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
 	    {			
 			model.addAttribute("toDo", toDo);
@@ -160,5 +162,15 @@ public class ToDoListController {
 		toDoServ.updateToDo(toDo, user, title, completed);
 
 		return "redirect:/";
+	}
+	
+	@GetMapping("/delete-todo")
+	private String deleteToDo(@RequestParam int id, Model model) {
+		ToDo toDo = toDoServ.getToDo(id);		
+	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
+	    {
+	    	toDoServ.deleteTodo(id);
+	    }
+		return "redirect:/index?page=1&size=10&deletedToDoId=true";
 	}
 }

@@ -9,4 +9,5 @@ public interface IToDoService {
 	List<ToDo> findByUserName(List<ToDo> list, String userName);	
 	List<ToDo> findByTitle(List<ToDo> list, String title);
 	List<ToDo> findByUserAndTitle(String userName, String title);
+	boolean deleteTodo(int id);
 }

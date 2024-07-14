@@ -111,5 +111,11 @@ public class ToDoService implements IToDoService {
         
         return toDoPage;
     }
+
+	@Override
+	public boolean deleteTodo(int id) {
+		todoRepository.deleteById(id);
+		return true;
+	}
 }
 

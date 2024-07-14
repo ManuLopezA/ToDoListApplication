@@ -5,6 +5,8 @@
 	<meta charset="UTF-8">
 	<title>To Do List</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<!--<script src="/js/delete.js" th:defer></script>-->
+	<script th:src="@{/js/delete.js}" th:defer></script>
 </head>
 
 <body>
@@ -52,6 +54,9 @@
 		<div th:if="${cantEdit}" class="alert alert-danger">
 			<p>Sorry, you cannot edit a todo that you do not own.</p>
 		</div>
+		<div th:if="${deletedToDoId}" class="alert alert-danger">
+			<p>Deleted ToDo Succesfull</p>
+		</div>
 
 
 		<div th:if="${toDoPage != null}">
@@ -85,7 +90,9 @@
 						<td th:text="${toDo.completed}"></td>
 						<td>
 							<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">Edit</a>
-							<a th:href="@{/delete-todo(id=${toDo.id})}" class="btn btn-danger">Delete</a>
+							<a href="#" sec:authorize="isAuthenticated()" th:onclick="'confirmDelete(' + ${toDo.id} + ')'"
+								class="btn btn-danger">Delete</a>							
+							<!--<a href="#" id="deleteButton" data-id="${toDo.id}" class="btn btn-danger">Delete</a>--> 
 						</td>
 					</tr>
 				</tbody>
