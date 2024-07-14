@@ -25,7 +25,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests()
-                .requestMatchers("/", "/index", "/filter-todos", "/login", "/static/**")
+                .requestMatchers("/", "/index", "/filter-todos", "/login")
                 .permitAll()
                 .requestMatchers("/create-todo", "/save-todo", "/edit-todo", "/update-todo")
                 .authenticated()

@@ -170,7 +170,8 @@ public class ToDoListController {
 	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
 	    {
 	    	toDoServ.deleteTodo(id);
+	    	return "redirect:/index?page=1&size=10&deletedToDoId=true";
 	    }
-		return "redirect:/index?page=1&size=10&deletedToDoId=true";
+	    return "redirect:/index?page=1&size=10&cantEdit=true";
 	}
 }
