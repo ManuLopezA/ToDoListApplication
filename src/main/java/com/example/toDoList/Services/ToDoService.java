@@ -71,12 +71,10 @@ public class ToDoService implements IToDoService {
 	
     
     public Page<ToDo> findPaginated(Pageable pageable) {
-//    	System.out.println("01 findPaginated");
         return todoRepository.findAll(pageable);
     }
     
     public Page<ToDo> findPaginatedFiltered(Pageable pageable, String userName, String title ) {
-//    	System.out.println("02 findPaginatedFiltered");
     	List<ToDo> todosFiltered = findByUserAndTitle(userName, title);
     	if (pageable.getSort().isSorted()) {
             Sort sort = pageable.getSort();

@@ -50,12 +50,10 @@
 				</div>
 			</div>
 		</form>
-
-		<div th:if="${cantEdit}" class="alert alert-danger">
-			<p>Sorry, you cannot edit a todo that you do not own.</p>
-		</div>
-		<div th:if="${deletedToDoId}" class="alert alert-danger">
-			<p>Deleted ToDo Succesfull</p>
+		
+		<!-- FEEDBACK MESSAGE -->
+		<div th:if="${message}" th:class="${message.getColor()}">
+			<p th:text="${message.getText()}"></p>
 		</div>
 
 
@@ -90,7 +88,7 @@
 						<td th:text="${toDo.completed}"></td>
 						<td>
 							<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">Edit</a>
-							<a href="#" sec:authorize="isAuthenticated()" th:onclick="'confirmDelete(' + ${toDo.id} + ')'"
+							<a href="#" th:onclick="'confirmDelete(' + ${toDo.id} + ')'"
 								class="btn btn-danger">Delete</a>							
 							<!--<a href="#" id="deleteButton" data-id="${toDo.id}" class="btn btn-danger">Delete</a>--> 
 						</td>

@@ -4,8 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-//import com.example.toDoList.Models.Color;
-
 @Controller
 public class SecurityController {
 
@@ -19,7 +17,6 @@ public class SecurityController {
 		model.addAttribute("loginError", true);
 		return "login";
 	}
-
 	
 //	@GetMapping("/logout")
 //	public String logout() {

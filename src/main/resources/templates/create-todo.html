@@ -53,8 +53,8 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
-        <div th:if="${error}" class="alert alert-danger" role="alert">
-            <p th:text="${error}"></p>
+        <div th:if="${error}" th:class="${error.getColor()}" role="alert">
+            <p th:text="${error.getText()}"></p>
         </div>
     </div>
 </body>

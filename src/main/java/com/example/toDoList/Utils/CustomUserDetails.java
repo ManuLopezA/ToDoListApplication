@@ -1,8 +1,10 @@
-package com.example.toDoList.Models;
+package com.example.toDoList.Utils;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.toDoList.Models.User;
 
 import java.util.Collection;
 import java.util.Collections;

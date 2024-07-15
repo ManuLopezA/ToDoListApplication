@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.toDoList.Models.CustomAuthenticationSuccessHandler;
+import com.example.toDoList.Utils.CustomAuthenticationSuccessHandler;
 
 @SuppressWarnings("deprecation")
 @Configuration
@@ -25,6 +25,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests()
+            	.requestMatchers("/static/**", "/js/**").permitAll() 
                 .requestMatchers("/", "/index", "/filter-todos", "/login")
                 .permitAll()
                 .requestMatchers("/create-todo", "/save-todo", "/edit-todo", "/update-todo")
@@ -38,7 +39,7 @@ public class WebSecurityConfig {
                 .failureUrl("/login-error?loginError=true")
                 .successHandler(customAuthenticationSuccessHandler())
             .and()
-            // no me está funcionando el logout
+            // it's not working...
             .logout()
 	            .logoutUrl("/logout")
 	            .logoutSuccessUrl("/login?logout=true")

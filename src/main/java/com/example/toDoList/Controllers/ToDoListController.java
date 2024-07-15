@@ -16,12 +16,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.toDoList.Models.ToDo;
 import com.example.toDoList.Models.User;
 import com.example.toDoList.Services.CustomUserDetailsService;
 import com.example.toDoList.Services.ToDoService;
 import com.example.toDoList.Services.UserService;
+import com.example.toDoList.Utils.Message;
+import com.example.toDoList.Utils.MessageType;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -46,8 +49,7 @@ public class ToDoListController {
 			@RequestParam(value = "filterTitle", required = false) String filterTitle,
 			@RequestParam(value = "filterUsername", required = false) String filterUsername,
 			@RequestParam(defaultValue = "id,asc") String[] sort, Model model,
-			@RequestParam(required = false) boolean cantEdit,
-			@RequestParam(required = false) boolean deletedToDoId) {
+			@RequestParam(required = false) Message message) {
 		int currentPage = page.orElse(1);
 		int pageSize = size.orElse(10);
 		Page<ToDo> toDoPage;
@@ -64,12 +66,11 @@ public class ToDoListController {
 			toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize, Sort.by(order)),
 					filterUsername, filterTitle);
 		}
+		if (message != null) {
+			model.addAttribute("message", message);
+			System.out.println("/index " + message.toString());
+		}
 
-		   if (cantEdit) 
-		        model.addAttribute("cantEdit", true);
-		   if (deletedToDoId)
-			   model.addAttribute("deletedToDoId", deletedToDoId);			   
-		    
 		model.addAttribute("toDoPage", toDoPage);
 		model.addAttribute("filterTitle", filterTitle);
 		model.addAttribute("filterUsername", filterUsername);
@@ -91,7 +92,6 @@ public class ToDoListController {
 			@RequestParam(value = "filterUsername", required = false) String filterUsername, Model model) {
 		System.err.println("/filter-todos");
 		List<ToDo> toDoList = toDoServ.findByUserAndTitle(filterUsername, filterTitle);
-		model.addAttribute("toDos", toDoList);
 		return "index";
 	}
 
@@ -110,14 +110,15 @@ public class ToDoListController {
 	@PostMapping(path = "/save-todo")
 	private String saveToDo(Model model, @RequestParam int userId, @RequestParam String title,
 			@RequestParam boolean completed) {
-		if (title.length() > 200) {
-			model.addAttribute("error", "Title must be less than 200 characters.");
+				
+		if (title.length() > 200) {		
+			model.addAttribute("error", new Message(MessageType.TOOLONG));
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
 		}
-
-		if (title.isEmpty()) {
-			model.addAttribute("error", "Title can not be empty.");
+		
+		if (title == null || title.trim().isEmpty()) {
+			model.addAttribute("error", new Message(MessageType.TOOSHORT));
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
 		}
@@ -132,46 +133,50 @@ public class ToDoListController {
 	}
 
 	@GetMapping("/edit-todo")
-	private String editToDo(@RequestParam int id, HttpServletRequest request, Model model) {		
-		ToDo toDo = toDoServ.getToDo(id);		
-	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
-	    {			
+	private String editToDo(@RequestParam int id, HttpServletRequest request, Model model,
+			RedirectAttributes redirectAttributes) {
+		ToDo toDo = toDoServ.getToDo(id);
+		if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
 			model.addAttribute("toDo", toDo);
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
-	    }	    	   
-	    return "redirect:/index?page=1&size=10&cantEdit=true";
+		}
+		redirectAttributes.addFlashAttribute("message", new Message(MessageType.CANTEDIT));
+		return "redirect:/index?page=1&size=10";
 	}
 
 	@PostMapping("/update-todo")
 	private String updateToDo(Model model, @RequestParam int id, @RequestParam int userId, @RequestParam String title,
-			@RequestParam boolean completed) {
+			@RequestParam boolean completed, RedirectAttributes redirectAttributes) {
 		if (title.length() > 200) {
-			model.addAttribute("error", "Title must be less than 200 characters.");
-			model.addAttribute("users", userServ.findAllUsers());
-			return "create-todo";
+			redirectAttributes.addFlashAttribute("error", new Message(MessageType.TOOLONG));
+			return "redirect:/create-todo?id="+id;
+		}
+		if (title == null || title.trim().isEmpty()) {
+			redirectAttributes.addFlashAttribute("error", new Message(MessageType.TOOSHORT));
+			return "redirect:/create-todo?id="+id;
 		}
 
 		ToDo toDo = toDoServ.getToDo(id);
 		if (toDo == null) {
-			model.addAttribute("error", "ToDo not found.");
 			return "redirect:/";
 		}
 
 		User user = userServ.getUser(userId);
 		toDoServ.updateToDo(toDo, user, title, completed);
-
-		return "redirect:/";
+		redirectAttributes.addFlashAttribute("message", new Message(MessageType.EDITED));
+		return "redirect:/index?page=1&size=10";
 	}
-	
+
 	@GetMapping("/delete-todo")
-	private String deleteToDo(@RequestParam int id, Model model) {
-		ToDo toDo = toDoServ.getToDo(id);		
-	    if(sessionServ.getLoggedInUserId()== toDo.getUser().getId()) 
-	    {
-	    	toDoServ.deleteTodo(id);
-	    	return "redirect:/index?page=1&size=10&deletedToDoId=true";
-	    }
-	    return "redirect:/index?page=1&size=10&cantEdit=true";
+	private String deleteToDo(@RequestParam int id, RedirectAttributes redirectAttributes) {
+		ToDo toDo = toDoServ.getToDo(id);
+		if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
+			toDoServ.deleteTodo(id);
+			redirectAttributes.addFlashAttribute("message", new Message(MessageType.DELETED));
+			return "redirect:/index?page=1&size=10";
+		}
+		redirectAttributes.addFlashAttribute("message", new Message(MessageType.CANTDELETE));
+		return "redirect:/index?page=1&size=10";
 	}
 }

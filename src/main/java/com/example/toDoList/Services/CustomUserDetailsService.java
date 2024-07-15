@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.toDoList.Models.Color;
-import com.example.toDoList.Models.CustomUserDetails;
 import com.example.toDoList.Models.User;
+import com.example.toDoList.Utils.Color;
+import com.example.toDoList.Utils.CustomUserDetails;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -36,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 	    int loggedInUserId = userDetails.getId();
-	    System.out.println(Color.GREEN + loggedInUserId + " -> user logged in" + Color.RESET);
+	    System.out.println(Color.GREEN + "ID:"+loggedInUserId + " -> user logged in" + Color.RESET);
 	    return loggedInUserId;
 	}
 }
