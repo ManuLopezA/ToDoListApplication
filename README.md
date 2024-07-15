@@ -7,9 +7,7 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
 - [Features](#features)
 - [Technologies](#technologies)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Developed By](#developed-by)
 
 ## Features
 
