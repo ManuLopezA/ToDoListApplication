@@ -52,5 +52,5 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
 
 ## Developed By
 
-[Your Name](https://github.com/yourusername)  
-Connect with me on [LinkedIn](https://www.linkedin.com/in/yourprofile)
+__[Manuel López]__(https://github.com/ManuLopezA)  
+Connect with me on __[LinkedIn]__(https://www.linkedin.com/in/manuellopezaguilar/)
