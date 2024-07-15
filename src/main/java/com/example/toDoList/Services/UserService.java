@@ -50,5 +50,10 @@ public class UserService implements IUserService {
 		return user;
 	}
 
+	@Override
+	public void addNewUser(User user) {
+		ur.save(user);		
+	}
+
 
 }

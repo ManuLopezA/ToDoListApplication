@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
@@ -5,11 +6,12 @@
 	<meta charset="UTF-8">
 	<title>To Do List</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<!--<script src="/js/delete.js" th:defer></script>-->
+	
 	<script th:src="@{/js/delete.js}" th:defer></script>
 </head>
 
 <body>
+	
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="#">ToDo-App</a>
 		<div class="collapse navbar-collapse">
@@ -23,7 +25,7 @@
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li sec:authorize="isAuthenticated()" class="nav-item">
-					<a class="nav-link" href="/logout">Logout</a>
+					<a class="nav-link" href="#">Logout</a>
 				</li>
 				<li sec:authorize="!isAuthenticated()" class="nav-item">
 					<a class="nav-link" href="/login">Login</a>
@@ -50,8 +52,7 @@
 				</div>
 			</div>
 		</form>
-		
-		<!-- FEEDBACK MESSAGE -->
+	
 		<div th:if="${message}" th:class="${message.getColor()}">
 			<p th:text="${message.getText()}"></p>
 		</div>
@@ -90,7 +91,7 @@
 							<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">Edit</a>
 							<a href="#" th:onclick="'confirmDelete(' + ${toDo.id} + ')'"
 								class="btn btn-danger">Delete</a>							
-							<!--<a href="#" id="deleteButton" data-id="${toDo.id}" class="btn btn-danger">Delete</a>--> 
+							 
 						</td>
 					</tr>
 				</tbody>
@@ -109,3 +110,4 @@
 </body>
 
 </html>
+-->

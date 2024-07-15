@@ -20,10 +20,6 @@ public class ToDoService implements IToDoService {
 	private ToDoRepository todoRepository;
 	
 
-	public void addNewToDo(ToDo newToDo) {
-		todoRepository.save(newToDo);
-	}
-
 	@Override
 	public List<ToDo> findByTitle(List<ToDo>todoList, String title) {
 		List<ToDo> todoListFiltered = new ArrayList<ToDo>();
@@ -114,6 +110,11 @@ public class ToDoService implements IToDoService {
 	public boolean deleteTodo(int id) {
 		todoRepository.deleteById(id);
 		return true;
+	}
+
+	@Override
+	public void addNewToDo(ToDo toDo) {
+		todoRepository.save(toDo);
 	}
 }
 

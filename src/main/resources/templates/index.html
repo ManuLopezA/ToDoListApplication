@@ -1,18 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
 	<meta charset="UTF-8">
 	<title>To Do List</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<!--<script src="/js/delete.js" th:defer></script>-->
+	<script th:src="@{/js/delete.js}" th:defer></script>
 </head>
 
 <body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">ToDo-App</a>
+		<div class="collapse navbar-collapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/index">ToDo List</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/create-todo">Create ToDo</a>
+				</li>
+			</ul>
+			<ul class="navbar-nav ml-auto">
+				<li sec:authorize="isAuthenticated()" class="nav-item">
+					<a class="nav-link" href="#">Logout</a>
+				</li>
+				<li sec:authorize="!isAuthenticated()" class="nav-item">
+					<a class="nav-link" href="/login">Login</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 	<div class="container mt-5">
 		<h1>To Do List</h1>
-
-
-		<form action="/filter-todos" method="get" class="mb-4">
+		<form action="/index" method="get" class="mb-4">
 			<div class="form-row">
 				<div class="col">
 					<label for="filterTitle">Filter by Title</label>
@@ -29,29 +50,61 @@
 				</div>
 			</div>
 		</form>
+		
+		<!-- FEEDBACK MESSAGE -->
+		<div th:if="${message}" th:class="${message.getColor()}">
+			<p th:text="${message.getText()}"></p>
+		</div>
 
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Username</th>
-					<th>Country</th>
-					<th>Completed</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="toDo : ${toDos}">
-					<td th:text="${toDo.title}"></td>
-					<td th:text="${toDo.user.userName}"></td>
-					<td th:text="${toDo.user.country}"></td>
-					<td th:text="${toDo.completed}"></td>
-					<td>
-						<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">edit</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+
+		<div th:if="${toDoPage != null}">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'title,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+								th:text="'Title'"></a>
+						</th>
+						<th>
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'userName,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+								th:text="'Username'"></a>
+						</th>
+						<th>
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'user.country,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+								th:text="'Country'"></a>
+						</th>
+						<th>
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'completed,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+								th:text="'Completed'"></a>
+						</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="toDo : ${toDoPage.content}">
+						<td th:text="${toDo.title}"></td>
+						<td th:text="${toDo.user.userName}"></td>
+						<td th:text="${toDo.user.country}"></td>
+						<td th:text="${toDo.completed}"></td>
+						<td>
+							<a th:href="@{/edit-todo(id=${toDo.id})}" class="btn btn-warning">Edit</a>
+							<a href="#" th:onclick="'confirmDelete(' + ${toDo.id} + ')'"
+								class="btn btn-danger">Delete</a>							
+							<!--<a href="#" id="deleteButton" data-id="${toDo.id}" class="btn btn-danger">Delete</a>--> 
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div th:if="${toDoPage == null || toDoPage.totalElements == 0}">
+			<p>No results found</p>
+		</div>
+		<div th:if="${toDoPage.totalPages > 0}" class="pagination">
+			<span th:each="pageNumber : ${pageNumbers}">
+				<a th:href="@{/index(size=${toDoPage.size}, page=${pageNumber}, filterTitle=${filterTitle}, filterUsername=${filterUsername})}"
+					th:text="${pageNumber}" th:class="${pageNumber == toDoPage.number + 1} ? 'active' : ''"></a>
+			</span>
+		</div>
 	</div>
 </body>
 

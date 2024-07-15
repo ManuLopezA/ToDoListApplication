@@ -83,8 +83,8 @@ public class ToDoListController {
 			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
 			model.addAttribute("pageNumbers", pageNumbers);
 		}
-
-		return "todo-pagination";
+//-------------------------
+		return "index";
 	}
 
 	@GetMapping(path = "/filter-todos")

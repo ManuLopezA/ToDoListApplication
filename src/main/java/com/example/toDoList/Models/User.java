@@ -38,6 +38,16 @@ public class User {
 	public User() {
 		super();
 	}
+	
+	public User(String name, String userName, String password, String city, String country) {
+		super();
+		this.name = name;
+		this.userName = userName;
+		this.password = password;
+		this.city = city;
+		this.country = country;
+	}
+
 	public String getName() {
 		return name;
 	}

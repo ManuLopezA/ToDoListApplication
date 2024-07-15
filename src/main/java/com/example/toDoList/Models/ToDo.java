@@ -27,8 +27,16 @@ public class ToDo
 
 	public ToDo() {
 		super();
-	}
+	}	
 	
+	public ToDo(String title, boolean completed, User user) {
+		super();
+		this.title = title;
+		this.completed = completed;
+		this.user = user;
+	}
+
+
 	public String getTitle() {
 		return title;
 	}

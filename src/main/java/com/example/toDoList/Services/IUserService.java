@@ -9,4 +9,5 @@ public interface IUserService {
 	User getUser(int id);
 	User getUser(String userName);
 	boolean findByUserName(String userName);
+	void addNewUser(User user);
 }
