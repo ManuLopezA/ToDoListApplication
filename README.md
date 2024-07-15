@@ -37,15 +37,15 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
 
 3. **Reconfigure the `application.properties` file**
    - Open the file located at `src/main/resources/application.properties`.
-   - **Update the following lines with the appropriate schema name, username, and password:**
+   - Update the following lines with the appropriate **schema name**, **username**, and **password**:
      ```
      spring.jpa.hibernate.ddl-auto=update
-     spring.datasource.url=jdbc:mysql://localhost:3306/todolistapp?serverTimezone=UTC
+     spring.datasource.url=jdbc:mysql://localhost:3306/**todolistapp**?serverTimezone=UTC
      spring.datasource.username=user
      spring.datasource.password=password
      server.port=8080
      ```
-   - **If necessary, reconfigure the ports.**
+   - If necessary, reconfigure the **ports**.
 
 4. **Run the application**
    - Start your application by running the main class located at `src/main/java/com/example/toDoList/ToDoApplication.java`.
