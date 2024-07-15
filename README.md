@@ -31,9 +31,10 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
      git clone https://github.com/your-username/your-repo-name.git
      ```
 
-2. **Open your database IDE**
-   - Use a database management tool like MySQL Workbench or DBeaver.
-   - Create a new database named `todolistapp` (or any name you prefer).
+2. **Open your database management tool**
+   - Use a tool like MySQL Workbench or DBeaver.
+   - Create a new database schema named **todolistapp** (or any name you prefer).
+
 
 3. **Reconfigure the `application.properties` file**
    - Open the file located at `src/main/resources/application.properties`.
