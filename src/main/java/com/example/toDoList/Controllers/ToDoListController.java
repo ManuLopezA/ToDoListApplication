@@ -24,6 +24,7 @@ import com.example.toDoList.Services.CustomUserDetailsService;
 import com.example.toDoList.Services.ToDoService;
 import com.example.toDoList.Services.UserService;
 import com.example.toDoList.Utils.Message;
+import com.example.toDoList.Utils.MessageFactory;
 import com.example.toDoList.Utils.MessageType;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -112,13 +113,13 @@ public class ToDoListController {
 			@RequestParam boolean completed) {
 				
 		if (title.length() > 200) {		
-			model.addAttribute("error", new Message(MessageType.TOOLONG));
+			model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
 		}
 		
 		if (title == null || title.trim().isEmpty()) {
-			model.addAttribute("error", new Message(MessageType.TOOSHORT));
+			model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
 		}
@@ -141,7 +142,7 @@ public class ToDoListController {
 			model.addAttribute("users", userServ.findAllUsers());
 			return "create-todo";
 		}
-		redirectAttributes.addFlashAttribute("message", new Message(MessageType.CANTEDIT));
+		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTEDIT));
 		return "redirect:/index?page=1&size=10";
 	}
 
@@ -149,11 +150,11 @@ public class ToDoListController {
 	private String updateToDo(Model model, @RequestParam int id, @RequestParam int userId, @RequestParam String title,
 			@RequestParam boolean completed, RedirectAttributes redirectAttributes) {
 		if (title.length() > 200) {
-			redirectAttributes.addFlashAttribute("error", new Message(MessageType.TOOLONG));
+			redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
 			return "redirect:/create-todo?id="+id;
 		}
 		if (title == null || title.trim().isEmpty()) {
-			redirectAttributes.addFlashAttribute("error", new Message(MessageType.TOOSHORT));
+			redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
 			return "redirect:/create-todo?id="+id;
 		}
 
@@ -164,7 +165,7 @@ public class ToDoListController {
 
 		User user = userServ.getUser(userId);
 		toDoServ.updateToDo(toDo, user, title, completed);
-		redirectAttributes.addFlashAttribute("message", new Message(MessageType.EDITED));
+		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.EDITED));
 		return "redirect:/index?page=1&size=10";
 	}
 
@@ -173,10 +174,10 @@ public class ToDoListController {
 		ToDo toDo = toDoServ.getToDo(id);
 		if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
 			toDoServ.deleteTodo(id);
-			redirectAttributes.addFlashAttribute("message", new Message(MessageType.DELETED));
+			redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.DELETED));
 			return "redirect:/index?page=1&size=10";
 		}
-		redirectAttributes.addFlashAttribute("message", new Message(MessageType.CANTDELETE));
+		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTDELETE));
 		return "redirect:/index?page=1&size=10";
 	}
 }
