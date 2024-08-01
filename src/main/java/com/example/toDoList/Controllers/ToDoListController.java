@@ -32,152 +32,172 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class ToDoListController {
 
-	@Autowired
-	private UserService userServ;
-	@Autowired
-	private ToDoService toDoServ;
-	@Autowired
-	private CustomUserDetailsService sessionServ;
+    @Autowired
+    private UserService userServ;
+    @Autowired
+    private ToDoService toDoServ;
+    @Autowired
+    private CustomUserDetailsService sessionServ;
 
-	@GetMapping("/")
-	private String redirectToIndex() {
-		return "redirect:/index?page=1&size=10";
-	}
+    @GetMapping("/")
+    private String redirectToIndex() {
+        return "redirect:/index?page=1&size=10";
+    }
 
-	@GetMapping("/index")
-	private String toDoPagination(@RequestParam("page") Optional<Integer> page,
-			@RequestParam("size") Optional<Integer> size,
-			@RequestParam(value = "filterTitle", required = false) String filterTitle,
-			@RequestParam(value = "filterUsername", required = false) String filterUsername,
-			@RequestParam(defaultValue = "id,asc") String[] sort, Model model,
-			@RequestParam(required = false) Message message) {
-		int currentPage = page.orElse(1);
-		int pageSize = size.orElse(10);
-		Page<ToDo> toDoPage;
+    @GetMapping("/index")
+    private String toDoPagination(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size,
+            @RequestParam(value = "filterTitle", required = false) String filterTitle,
+            @RequestParam(value = "filterUsername", required = false) String filterUsername,
+            @RequestParam(defaultValue = "id,asc") String[] sort,
+            Model model,
+            @RequestParam(required = false) Message message) {
+     
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(10);
+        String sortField = sort[0];
+        String sortDirection = sort[1];
+        
+        Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Order order = new Order(direction, sortField);
 
-		String sortField = sort[0];
-		String sortDirection = sort[1];
+        PageRequest pageRequest = PageRequest.of(currentPage - 1, pageSize, Sort.by(order));
+        Page<ToDo> toDoPage;
 
-		Direction direction = sortDirection.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-		Order order = new Order(direction, sortField);
+        if ((filterTitle == null || filterTitle.isEmpty()) && (filterUsername == null || filterUsername.isEmpty())) {
+            toDoPage = toDoServ.findPaginated(pageRequest);
+        } else {
+            toDoPage = toDoServ.findPaginatedFiltered(pageRequest, filterUsername, filterTitle);
+        }
 
-		if ((filterTitle == null || filterTitle.isEmpty()) && (filterUsername == null || filterUsername.isEmpty())) {
-			toDoPage = toDoServ.findPaginated(PageRequest.of(currentPage - 1, pageSize, Sort.by(order)));
-		} else {
-			toDoPage = toDoServ.findPaginatedFiltered(PageRequest.of(currentPage - 1, pageSize, Sort.by(order)),
-					filterUsername, filterTitle);
-		}
-		if (message != null) {
-			model.addAttribute("message", message);
-			System.out.println("/index " + message.toString());
-		}
+        if (message != null) {
+            model.addAttribute("message", message);
+        }
 
-		model.addAttribute("toDoPage", toDoPage);
-		model.addAttribute("filterTitle", filterTitle);
-		model.addAttribute("filterUsername", filterUsername);
-		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortDirection", sortDirection);
-		model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
-		int totalPages = toDoPage.getTotalPages();
+        model.addAttribute("toDoPage", toDoPage);
+        model.addAttribute("filterTitle", filterTitle);
+        model.addAttribute("filterUsername", filterUsername);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDirection", sortDirection);
+        model.addAttribute("reverseSortDirection", sortDirection.equals("asc") ? "desc" : "asc");
 
-		if (totalPages > 0) {
-			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-			model.addAttribute("pageNumbers", pageNumbers);
-		}
-//-------------------------
-		return "index";
-	}
+        List<Integer> pageNumbers = IntStream.rangeClosed(1, toDoPage.getTotalPages())
+                .boxed()
+                .collect(Collectors.toList());
+        model.addAttribute("pageNumbers", pageNumbers);
 
-	@GetMapping(path = "/filter-todos")
-	private String filterTodos(@RequestParam(value = "filterTitle", required = false) String filterTitle,
-			@RequestParam(value = "filterUsername", required = false) String filterUsername, Model model) {
-		System.err.println("/filter-todos");
-		List<ToDo> toDoList = toDoServ.findByUserAndTitle(filterUsername, filterTitle);
-		return "index";
-	}
+        return "index";
+    }
 
-	@GetMapping("/create-todo")
-	private String createOrUpdateToDo(@RequestParam(required = false) Integer id, Model model) {
-		if (id == null) {
-			model.addAttribute("users", userServ.findAllUsers());
-		} else {
-			ToDo toDo = toDoServ.getToDo(id);
-			model.addAttribute("users", userServ.findAllUsers());
-			model.addAttribute("toDo", toDo);
-		}
-		return "create-todo";
-	}
+    @GetMapping("/create-todo")
+    private String createOrUpdateToDo(
+            @RequestParam(required = false) Integer id,
+            Model model) {
+        
+        model.addAttribute("users", userServ.findAllUsers());
 
-	@PostMapping(path = "/save-todo")
-	private String saveToDo(Model model, @RequestParam int userId, @RequestParam String title,
-			@RequestParam boolean completed) {
-				
-		if (title.length() > 200) {		
-			model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
-			model.addAttribute("users", userServ.findAllUsers());
-			return "create-todo";
-		}
-		
-		if (title == null || title.trim().isEmpty()) {
-			model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
-			model.addAttribute("users", userServ.findAllUsers());
-			return "create-todo";
-		}
+        if (id != null) {
+            ToDo toDo = toDoServ.getToDo(id);
+            model.addAttribute("toDo", toDo);
+        }
 
-		User user = userServ.getUser(userId);
-		ToDo newToDo = new ToDo();
-		newToDo.setUser(user);
-		newToDo.setTitle(title);
-		newToDo.setCompleted(completed);
-		toDoServ.addNewToDo(newToDo);
-		return "redirect:/";
-	}
+        return "create-todo";
+    }
 
-	@GetMapping("/edit-todo")
-	private String editToDo(@RequestParam int id, HttpServletRequest request, Model model,
-			RedirectAttributes redirectAttributes) {
-		ToDo toDo = toDoServ.getToDo(id);
-		if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
-			model.addAttribute("toDo", toDo);
-			model.addAttribute("users", userServ.findAllUsers());
-			return "create-todo";
-		}
-		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTEDIT));
-		return "redirect:/index?page=1&size=10";
-	}
+    @PostMapping("/save-todo")
+    private String saveToDo(
+            @RequestParam int userId,
+            @RequestParam String title,
+            @RequestParam boolean completed,
+            Model model) {
+        
+        if (title.length() > 200) {
+            model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
+            model.addAttribute("users", userServ.findAllUsers());
+            return "create-todo";
+        }
+        
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
+            model.addAttribute("users", userServ.findAllUsers());
+            return "create-todo";
+        }
 
-	@PostMapping("/update-todo")
-	private String updateToDo(Model model, @RequestParam int id, @RequestParam int userId, @RequestParam String title,
-			@RequestParam boolean completed, RedirectAttributes redirectAttributes) {
-		if (title.length() > 200) {
-			redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
-			return "redirect:/create-todo?id="+id;
-		}
-		if (title == null || title.trim().isEmpty()) {
-			redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
-			return "redirect:/create-todo?id="+id;
-		}
+        User user = userServ.getUser(userId);
+        ToDo newToDo = new ToDo();
+        newToDo.setUser(user);
+        newToDo.setTitle(title);
+        newToDo.setCompleted(completed);
+        toDoServ.addNewToDo(newToDo);
 
-		ToDo toDo = toDoServ.getToDo(id);
-		if (toDo == null) {
-			return "redirect:/";
-		}
+        return "redirect:/";
+    }
 
-		User user = userServ.getUser(userId);
-		toDoServ.updateToDo(toDo, user, title, completed);
-		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.EDITED));
-		return "redirect:/index?page=1&size=10";
-	}
+    @GetMapping("/edit-todo")
+    private String editToDo(
+            @RequestParam int id,
+            HttpServletRequest request,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        
+        ToDo toDo = toDoServ.getToDo(id);
 
-	@GetMapping("/delete-todo")
-	private String deleteToDo(@RequestParam int id, RedirectAttributes redirectAttributes) {
-		ToDo toDo = toDoServ.getToDo(id);
-		if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
-			toDoServ.deleteTodo(id);
-			redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.DELETED));
-			return "redirect:/index?page=1&size=10";
-		}
-		redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTDELETE));
-		return "redirect:/index?page=1&size=10";
-	}
+        if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
+            model.addAttribute("toDo", toDo);
+            model.addAttribute("users", userServ.findAllUsers());
+            return "create-todo";
+        }
+
+        redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTEDIT));
+        return "redirect:/index?page=1&size=10";
+    }
+
+    @PostMapping("/update-todo")
+    private String updateToDo(
+            @RequestParam int id,
+            @RequestParam int userId,
+            @RequestParam String title,
+            @RequestParam boolean completed,
+            RedirectAttributes redirectAttributes) {
+        
+        if (title.length() > 200) {
+            redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOLONG));
+            return "redirect:/create-todo?id=" + id;
+        }
+
+        if (title == null || title.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", MessageFactory.createMessage(MessageType.TOOSHORT));
+            return "redirect:/create-todo?id=" + id;
+        }
+
+        ToDo toDo = toDoServ.getToDo(id);
+
+        if (toDo == null) {
+            return "redirect:/";
+        }
+
+        User user = userServ.getUser(userId);
+        toDoServ.updateToDo(toDo, user, title, completed);
+        redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.EDITED));
+
+        return "redirect:/index?page=1&size=10";
+    }
+
+    @GetMapping("/delete-todo")
+    private String deleteToDo(
+            @RequestParam int id,
+            RedirectAttributes redirectAttributes) {
+        
+        ToDo toDo = toDoServ.getToDo(id);
+
+        if (sessionServ.getLoggedInUserId() == toDo.getUser().getId()) {
+            toDoServ.deleteTodo(id);
+            redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.DELETED));
+        } else {
+            redirectAttributes.addFlashAttribute("message", MessageFactory.createMessage(MessageType.CANTDELETE));
+        }
+
+        return "redirect:/index?page=1&size=10";
+    }
 }

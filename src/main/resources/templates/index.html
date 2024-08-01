@@ -61,12 +61,12 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th>
+						<th>         
 							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'title,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Title'"></a>
 						</th>
 						<th>
-							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'userName,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
+							<a th:href="@{/index(size=${toDoPage.size}, page=${toDoPage.number + 1}, filterTitle=${filterTitle}, filterUsername=${filterUsername}, sort=${'user.userName,' + (sortDirection == 'asc' ? 'desc' : 'asc')})}"
 								th:text="'Username'"></a>
 						</th>
 						<th>
