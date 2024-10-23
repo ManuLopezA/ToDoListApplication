@@ -6,6 +6,7 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
 
 - [Features](#features)
 - [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Developed By](#developed-by)
 
@@ -23,6 +24,15 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
 - [MySQL](https://www.mysql.com/) - Version 8.0.32
 - [Thymeleaf](https://www.thymeleaf.org/)
 
+## Prerequisites
+
+Before you proceed with the installation and running of the project, ensure you have the following tools installed:
+
+1. **Java 17** - Download from [Oracle](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html).
+2. **MySQL 8.0.32** - Install MySQL from [here](https://dev.mysql.com/downloads/installer/).
+3. **Spring Tool Suite 4 for Eclipse(STS4)** - Download and install the latest version of STS4 from [here](https://spring.io/tools).
+   - **STS4** is recommended for running and debugging Spring Boot applications easily.
+
 ## Installation
 
 1. **Download the repository**
@@ -30,13 +40,20 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
      ```
      git clone https://github.com/ManuLopezA/ToDoListApplication.git
      ```
+     
+2. **Open the project in Spring Tool Suite 4 (STS4)**
+   - Open **Spring Tool Suite 4**.
+   - Import the project as a Maven project:
+     - Go to `File > Import > Existing Maven Projects`.
+     - Select the folder where you cloned the project.
 
-2. **Open your database management tool**
+
+3. **Open your database management tool**
    - Use a tool like MySQL Workbench or DBeaver.
    - Create a new schema named **todolistapp** (or any name you prefer).
 
 
-3. **Reconfigure the `application.properties` file**
+4. **Reconfigure the `application.properties` file**
    - Open the file located at `src/main/resources/application.properties`.
    - Update the following lines with the appropriate **schema name**, **username**, and **password**:
      ```
@@ -47,10 +64,14 @@ This is a simple task management project (ToDo List) developed with Spring Boot 
      ```
    - If necessary, reconfigure the **ports**.
 
-4. **Run the application**
-   - Start your application by running the main class located at `src/main/java/com/example/toDoList/ToDoApplication.java`.
+5. **Run the application**
+   - In STS4, navigate to the main class located at `src/main/java/com/example/toDoList/ToDoApplication.java`.
+   - Right-click the class and select **Run As > Spring Boot App** to start the application.
+
+6. **Access the application**
+   - Once the application is running, open your browser and go to `http://localhost:8080`.
 
 ## Developed By
 
-**[Manuel López](https://github.com/ManuLopezA)**  
+**[Manu López](https://linktr.ee/manulopeza)**  
 Connect with me on **[LinkedIn](https://www.linkedin.com/in/manuellopezaguilar/)**
